@@ -128,12 +128,12 @@ public class RegistrationManagerImpl implements RegistrationManager {
                 return;
             }
 
-            String sessionId = NumberVerificationUtils.handleVerificationSession(accountManager,
-                    account.getSessionId(account.getNumber()),
-                    id -> account.setSessionId(account.getNumber(), id),
-                    voiceVerification,
-                    captcha);
-            NumberVerificationUtils.requestVerificationCode(accountManager, sessionId, voiceVerification);
+            // String sessionId = NumberVerificationUtils.handleVerificationSession(accountManager,
+            //         account.getSessionId(account.getNumber()),
+            //         id -> account.setSessionId(account.getNumber(), id),
+            //         voiceVerification,
+            //         captcha);
+            NumberVerificationUtils.requestVerificationCode(accountManager, "", voiceVerification);
             account.setRegistered(false);
         } catch (DeprecatedVersionException e) {
             logger.debug("Signal-Server returned deprecated version exception", e);
