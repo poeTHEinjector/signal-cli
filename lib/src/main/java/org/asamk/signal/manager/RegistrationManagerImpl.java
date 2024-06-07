@@ -142,11 +142,11 @@ class RegistrationManagerImpl implements RegistrationManager {
                 m.retrieveRemoteStorage();
             }
             // Set an initial empty profile so user can be added to groups
-            try {
-                m.updateProfile(UpdateProfile.newBuilder().build());
-            } catch (NoClassDefFoundError e) {
-                logger.warn("Failed to set default profile: {}", e.getMessage());
-            }
+//            try {
+//                m.updateProfile(UpdateProfile.newBuilder().build());
+//            } catch (NoClassDefFoundError e) {
+//                logger.warn("Failed to set default profile: {}", e.getMessage());
+//            }
 
             if (newManagerListener != null) {
                 newManagerListener.accept(m);
