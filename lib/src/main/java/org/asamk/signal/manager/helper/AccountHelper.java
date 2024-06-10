@@ -76,20 +76,21 @@ public class AccountHelper {
 
     public void checkWhoAmiI() throws IOException {
         final var whoAmI = dependencies.getAccountManager().getWhoAmI();
-        final var number = whoAmI.getNumber();
+//        final var number = whoAmI.getNumber();
         final var aci = ACI.parseOrNull(whoAmI.getAci());
-        final var pni = PNI.parseOrNull(whoAmI.getPni());
-        if (number.equals(account.getNumber()) && aci.equals(account.getAci()) && pni.equals(account.getPni())) {
+//        final var pni = PNI.parseOrNull(whoAmI.getPni());
+//        if (number.equals(account.getNumber()) && aci.equals(account.getAci()) && pni.equals(account.getPni())) {
+        if (aci.equals(account.getAci())) {
             return;
         }
 
-        updateSelfIdentifiers(number, aci, pni);
+        updateSelfIdentifiers(null, aci, null);
     }
 
     private void updateSelfIdentifiers(final String number, final ACI aci, final PNI pni) {
-        account.setNumber(number);
+//        account.setNumber(number);
         account.setAci(aci);
-        account.setPni(pni);
+//        account.setPni(pni);
         account.getRecipientTrustedResolver().resolveSelfRecipientTrusted(account.getSelfRecipientAddress());
         // TODO check and update remote storage
         context.getUnidentifiedAccessHelper().rotateSenderCertificates();
