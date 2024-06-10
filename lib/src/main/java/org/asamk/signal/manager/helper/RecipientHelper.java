@@ -32,11 +32,13 @@ public class RecipientHelper {
     private final SignalAccount account;
     private final SignalDependencies dependencies;
     private final ServiceEnvironmentConfig serviceEnvironmentConfig;
+    private final ProfileHelper profileHelper;
 
     public RecipientHelper(final Context context) {
         this.account = context.getAccount();
         this.dependencies = context.getDependencies();
         this.serviceEnvironmentConfig = dependencies.getServiceEnvironmentConfig();
+        this.profileHelper = context.getProfileHelper();
     }
 
     public SignalServiceAddress resolveSignalServiceAddress(RecipientId recipientId) {
@@ -104,20 +106,27 @@ public class RecipientHelper {
     }
 
     public Map<String, ACI> getRegisteredUsers(final Set<String> numbers) throws IOException {
-        final Map<String, ACI> registeredUsers;
+        Map<String, ACI> registeredUsers = null;
         try {
-            registeredUsers = dependencies.getAccountManager()
-                    .getRegisteredUsers(ServiceConfig.getIasKeyStore(),
-                            numbers,
-                            serviceEnvironmentConfig.getCdsMrenclave());
-        } catch (Quote.InvalidQuoteFormatException | UnauthenticatedQuoteException | SignatureException |
-                 UnauthenticatedResponseException | InvalidKeyException | NumberFormatException e) {
+            numbers.forEach(number -> {
+                ServiceId serviceId = profileHelper.getProfileServiceIdForNumber(number);
+                if (serviceId != null) {
+                    registeredUsers.put(number, ACI.from(serviceId));
+                }
+            });
+//            registeredUsers = dependencies.getAccountManager()
+//                    .getRegisteredUsers(ServiceConfig.getIasKeyStore(),
+//                            numbers,
+//                            serviceEnvironmentConfig.getCdsMrenclave());
+        } catch (NumberFormatException e) {
             throw new IOException(e);
         }
 
         // Store numbers as recipients, so we have the number/uuid association
-        registeredUsers.forEach((number, aci) -> account.getRecipientTrustedResolver()
-                .resolveRecipientTrusted(new SignalServiceAddress(aci, number)));
+        if (registeredUsers != null) {
+            registeredUsers.forEach((number, aci) -> account.getRecipientTrustedResolver()
+                    .resolveRecipientTrusted(new SignalServiceAddress(aci, number)));
+        }
 
         return registeredUsers;
     }

@@ -24,6 +24,7 @@ import org.whispersystems.signalservice.api.crypto.UnidentifiedAccess;
 import org.whispersystems.signalservice.api.profiles.AvatarUploadParams;
 import org.whispersystems.signalservice.api.profiles.ProfileAndCredential;
 import org.whispersystems.signalservice.api.profiles.SignalServiceProfile;
+import org.whispersystems.signalservice.api.push.ServiceId;
 import org.whispersystems.signalservice.api.push.SignalServiceAddress;
 import org.whispersystems.signalservice.api.push.exceptions.NotFoundException;
 import org.whispersystems.signalservice.api.push.exceptions.PushNetworkException;
@@ -137,6 +138,28 @@ public final class ProfileHelper {
         }
 
         return account.getProfileStore().getExpiringProfileKeyCredential(recipientId);
+    }
+
+    public ServiceId getProfileServiceIdForNumber(String e164) {
+        SignalServiceAddress address = new SignalServiceAddress(ServiceId.UNKNOWN, e164);
+        try {
+            ProfileAndCredential profile = blockingGetProfile(
+                    retrieveProfile(
+                            address,
+                            Optional.empty(),
+                            Optional.empty(),
+                            SignalServiceProfile.RequestType.PROFILE));
+            ServiceId serviceId = profile.getProfile().getServiceId();
+            if (serviceId != ServiceId.UNKNOWN) {
+                return serviceId;
+            } else {
+                logger.warn("Failed to retrieve profile serviceId for {}, uuid is empty", e164);
+            }
+        } catch (IOException e) {
+            logger.warn("Failed to retrieve profile serviceId, ignoring: {}", e.getMessage());
+            return null;
+        }
+        return null;
     }
 
     /**
@@ -380,7 +403,7 @@ public final class ProfileHelper {
         });
     }
 
-    private Single<ProfileAndCredential> retrieveProfile(
+    public Single<ProfileAndCredential> retrieveProfile(
             SignalServiceAddress address,
             Optional<ProfileKey> profileKey,
             Optional<UnidentifiedAccess> unidentifiedAccess,
