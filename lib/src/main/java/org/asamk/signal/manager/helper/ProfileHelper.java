@@ -141,7 +141,12 @@ public final class ProfileHelper {
     }
 
     public ServiceId getProfileServiceIdForNumber(String e164) {
-        SignalServiceAddress address = new SignalServiceAddress(ServiceId.UNKNOWN, e164);
+        SignalServiceAddress address = new SignalServiceAddress(ServiceId.UNKNOWN, e164) {
+            @Override
+            public String getIdentifier() {
+                return e164;
+            }
+        };
         try {
             ProfileAndCredential profile = blockingGetProfile(
                     retrieveProfile(
