@@ -13,6 +13,6 @@ class WhisperTrustStore implements TrustStore {
 
     @Override
     public String getKeyStorePassword() {
-        return "whisper";
+        return "";
     }
 }

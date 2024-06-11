@@ -21,6 +21,7 @@ import org.whispersystems.signalservice.internal.contacts.crypto.Unauthenticated
 import java.io.IOException;
 import java.security.SignatureException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -106,7 +107,7 @@ public class RecipientHelper {
     }
 
     public Map<String, ACI> getRegisteredUsers(final Set<String> numbers) throws IOException {
-        Map<String, ACI> registeredUsers = null;
+        Map<String, ACI> registeredUsers = new HashMap<>();
         try {
             numbers.forEach(number -> {
                 ServiceId serviceId = profileHelper.getProfileServiceIdForNumber(number);

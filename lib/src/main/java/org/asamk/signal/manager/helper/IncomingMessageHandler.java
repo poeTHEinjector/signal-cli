@@ -176,10 +176,12 @@ public final class IncomingMessageHandler {
             account.getRecipientTrustedResolver().resolveRecipientTrusted(content.getSender());
         }
         if (envelope.isReceipt()) {
-            final var senderPair = getSender(envelope, content);
-            final var sender = senderPair.first();
-            final var senderDeviceId = senderPair.second();
-            account.getMessageSendLogStore().deleteEntryForRecipient(envelope.getTimestamp(), sender, senderDeviceId);
+            logger.info("Ignoring Receipt messages: {}", envelope.getTimestamp());
+            return List.of();
+//            final var senderPair = getSender(envelope, content);
+//            final var sender = senderPair.first();
+//            final var senderDeviceId = senderPair.second();
+//            account.getMessageSendLogStore().deleteEntryForRecipient(envelope.getTimestamp(), sender, senderDeviceId);
         }
 
         if (isMessageBlocked(envelope, content)) {
